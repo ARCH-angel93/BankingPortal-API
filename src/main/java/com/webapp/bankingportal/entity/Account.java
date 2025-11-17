@@ -3,6 +3,7 @@ package com.webapp.bankingportal.entity;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -35,6 +36,8 @@ public class Account {
     private double balance;
     private String branch = "NIT";
     private String ifscCode = "NIT001";
+    
+    @JsonIgnore
     private String Pin;
 
     @NotNull
