@@ -130,12 +130,33 @@ public abstract class BaseTest {
         return user;
     }
 
+    /**
+     * Convert User to JSON including the password field for test purposes.
+     * This is needed because @JsonProperty(access = WRITE_ONLY) on the password
+     * field prevents it from being serialized in normal JSON operations.
+     */
+    protected static String userToJsonWithPassword(User user) {
+        com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
+        java.util.Map<String, Object> userMap = new java.util.HashMap<>();
+        userMap.put("name", user.getName());
+        userMap.put("password", user.getPassword());
+        userMap.put("email", user.getEmail());
+        userMap.put("countryCode", user.getCountryCode());
+        userMap.put("phoneNumber", user.getPhoneNumber());
+        userMap.put("address", user.getAddress());
+        try {
+            return mapper.writeValueAsString(userMap);
+        } catch (com.fasterxml.jackson.core.JsonProcessingException e) {
+            throw new RuntimeException("Failed to serialize user to JSON", e);
+        }
+    }
+
     protected User createAndRegisterUser() throws Exception {
         val user = createUser();
         mockMvc.perform(MockMvcRequestBuilders
                 .post("/api/users/register")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(JsonUtil.toJson(user)))
+                .content(userToJsonWithPassword(user)))
                 .andExpect(MockMvcResultMatchers.status().isOk());
         return user;
     }
